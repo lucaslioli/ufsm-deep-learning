@@ -1,6 +1,6 @@
 ## Descrição da avaliação
 
-Criar uma rede neural para realizar a análise de sentimentos de textos;
+Criar uma rede neural para realizar a análise de sentimentos de textos em *português*;
 
 - Realizar a extração de uma grande quantidade de texto;
 - Pré-processar os textos para remoção de conteúdos indesejáveis;
