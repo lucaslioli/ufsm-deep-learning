@@ -1,6 +1,6 @@
 import sys
 import tweepy
-import datetime
+import pickle
 
 from authenticate import api_tokens
 
@@ -12,9 +12,8 @@ class MyStreamListener(tweepy.StreamListener):
         print("Language:", status.lang)
         print("Text:", status.text)
 
-        tweet_insert = {}
-        tweet_insert["text"]                  = status.text
-        tweet_insert["lang"]                  = status.lang
+        status.text = status.text.replace('\n', ' ').replace('\r', '')
+        record(status.text)
 
         return True; # Don't kill the stream
 
@@ -45,7 +44,9 @@ def start_stream():
             
             continue
 
-
+def record(msg = ""):
+    with open("text-part1.pck", 'ab') as pck:
+        pickle.dump(msg, pck, pickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
     # Variables that contains the user credentials to access Twitter API
@@ -59,3 +60,7 @@ if __name__ == '__main__':
     api = tweepy.API(auth)
 
     start_stream()
+
+    f = open('text-part-1.csv','a')
+    f.write(str(now) + " = " + message + '\n')
+    f.close()

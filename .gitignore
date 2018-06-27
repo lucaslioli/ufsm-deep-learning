@@ -105,3 +105,6 @@ venv.bak/
 
 # Twitter API tokens
 authenticate.py
+
+# Pickle file
+.pck
