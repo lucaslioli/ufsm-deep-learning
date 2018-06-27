@@ -107,4 +107,6 @@ venv.bak/
 authenticate.py
 
 # Pickle file
-.pck
+*.pck
+# Record file for tests purposes
+*.txt
