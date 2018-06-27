@@ -8,23 +8,31 @@ from authenticate import api_tokens
 class MyStreamListener(tweepy.StreamListener):
     
     def on_status(self, status):
-        print("-----------------------------------------")
-        print("Language:", status.lang)
-        print("Text:", status.text)
+        if(not status.retweeted and 'RT @' not in status.text[0:4] and status.lang == "pt"):
+            print("-----------------------------------------")
+            print("Lang:", status.lang)
+            print("Text:", status.text)
 
-        status.text = status.text.replace('\n', ' ').replace('\r', '')
-        record(status.text)
+            status.text = status.text.replace('\n', ' ').replace('\r', '')
+
+            record(status.text)
 
         return True; # Don't kill the stream
 
     def on_error(self, status_code):
-        print(sys.stderr, 'Encountered error with status code:' + str(status_code))
+        print('Encountered error with status code:', status_code)
         print("-----------------------------------------")
         
         return True # Don't kill the stream
 
-    def on_timeout(self):
-        print(sys.stderr + 'Timeout...')
+    def on_exception(self, exception):
+        print('Exception: ', exception)
+        print("-----------------------------------------")
+
+        return True # Don't kill the stream
+    
+    def on_timeout(self, timeout):
+        print('Timeout: ', timeout)
         print("-----------------------------------------")
 
         return True # Don't kill the stream
@@ -36,7 +44,7 @@ def start_stream():
     while True:
         try:
             myStream = tweepy.streaming.Stream(auth, MyStreamListener())
-            myStream.filter(track=["a", "e", "i", "o", "u"], languages=["pt"])
+            myStream.filter(track=["a", "e", "i", "o", "u"], stall_warnings=True)
         
         except ValueError:
             print('ERROR: Exeption occurred!' + ValueError)
