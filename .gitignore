@@ -108,5 +108,6 @@ authenticate.py
 
 # Pickle file
 *.pck
+*.pkl
 # Record file for tests purposes
 *.txt

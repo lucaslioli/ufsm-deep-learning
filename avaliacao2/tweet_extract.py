@@ -14,10 +14,10 @@ def download_tweets(file_name, sentiment):
                 tweet = api.get_status(tweet_id)
 
                 tweet.text = tweet.text.replace('\n', ' ').replace('\r', '')
-                record(sentiment+"_texts", tweet.id, tweet.text)
-                
+                record(sentiment+"_texts", tweet.text, tweet.id)
+
                 print(str(counter), "- Tweet:", tweet.id, "recorded")
-            
+
             except tweepy.error.TweepError:
                 print(str(counter), "- Tweet:", tweet_id, "is not available")
 
@@ -31,14 +31,14 @@ if __name__ == '__main__':
     # Tweepy API authentication
     auth = tweepy.OAuthHandler(key['consumer_key'], key['consumer_secret'])
     auth.set_access_token(key['access_token'], key['access_token_secret'])
-    
+
     # API authentication
     api = tweepy.API(auth)
 
     with open("files/positive_texts.txt", 'w') as f:
         f.write("")
 
-    with open("files/positive_texts.pck", 'w') as f:
+    with open("files/positive_texts.pkl", 'w') as f:
         f.write("")
 
     print("Extraction positive tweets ...")

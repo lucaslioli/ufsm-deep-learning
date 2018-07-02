@@ -1,12 +1,12 @@
 import sys
 import tweepy
-import pickle
+import pickle as pkl
 
 from authenticate import api_tokens
 
 #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
-    
+
     def on_status(self, status):
         if(not status.retweeted and 'RT @' not in status.text[0:4] and status.lang == "pt"):
             print("-----------------------------------------")
@@ -15,14 +15,14 @@ class MyStreamListener(tweepy.StreamListener):
 
             status.text = status.text.replace('\n', ' ').replace('\r', '')
 
-            record("unclassified_tweets", status.id, status.text)
+            record("unprocessed_tweets", status.text, status.id)
 
         return True; # Don't kill the stream
 
     def on_error(self, status_code):
         print('Encountered error with status code:', status_code)
         print("-----------------------------------------")
-        
+
         return True # Don't kill the stream
 
     def on_exception(self, exception):
@@ -30,7 +30,7 @@ class MyStreamListener(tweepy.StreamListener):
         print("-----------------------------------------")
 
         return True # Don't kill the stream
-    
+
     def on_timeout(self, timeout):
         print('Timeout: ', timeout)
         print("-----------------------------------------")
@@ -45,21 +45,24 @@ def start_stream():
         try:
             myStream = tweepy.streaming.Stream(auth, MyStreamListener())
             myStream.filter(track=["a", "e", "i", "o", "u"], stall_warnings=True)
-        
+
         except ValueError:
             print('ERROR: Exeption occurred!' + ValueError)
             print("-----------------------------------------")
-            
+
             continue
 
 # Records the tweet ID and message into a file
-def record(file_name, id, msg):
+def record(file_name, msg, id = ""):
     # Using a txt file for testing purposes
     with open("files/"+file_name+".txt", 'a') as f:
-        f.write(str(id) + " => " + msg + '\n')
+        if(id != ""):
+            f.write(str(id) + " => " + msg + '\n')
+        else:
+            f.write(msg + '\n')
 
-    with open("files/"+file_name+".pck", 'ab') as pck:
-        pickle.dump(msg, pck, pickle.HIGHEST_PROTOCOL)
+    with open("files/"+file_name+".pkl", 'ab') as f:
+        pkl.dump(msg, f, pkl.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
     # Variables that contains the user credentials to access Twitter API
