@@ -15,7 +15,7 @@ class MyStreamListener(tweepy.StreamListener):
 
             status.text = status.text.replace('\n', ' ').replace('\r', '')
 
-            record(status.text)
+            record("unclassified_tweets", status.id, status.text)
 
         return True; # Don't kill the stream
 
@@ -52,23 +52,24 @@ def start_stream():
             
             continue
 
-def record(msg = ""):
-    with open("text-part1.pck", 'ab') as pck:
+# Records the tweet ID and message into a file
+def record(file_name, id, msg):
+    # Using a txt file for testing purposes
+    with open("files/"+file_name+".txt", 'a') as f:
+        f.write(str(id) + " => " + msg + '\n')
+
+    with open("files/"+file_name+".pck", 'ab') as pck:
         pickle.dump(msg, pck, pickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
     # Variables that contains the user credentials to access Twitter API
     key = api_tokens()
 
-    # Autenticação com a API Tweepy
+    # Tweepy API authentication
     auth = tweepy.OAuthHandler(key['consumer_key'], key['consumer_secret'])
     auth.set_access_token(key['access_token'], key['access_token_secret'])
 
-    # Autenticação com a API
+    # API authentication
     api = tweepy.API(auth)
 
     start_stream()
-
-    f = open('text-part-1.csv','a')
-    f.write(str(now) + " = " + message + '\n')
-    f.close()
