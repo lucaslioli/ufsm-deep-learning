@@ -5,7 +5,7 @@ import string                                   # Remove the ponctuation from th
 import unicodedata                              # Remove the accents from the texts
 from nltk.corpus import stopwords               # Methods to remove stop words
 from nltk.stem.wordnet import WordNetLemmatizer # Methods to lemmatize the texts
-from tweet_stream import record                 # Records the processed texts into a file
+from tweet_stream import record, record_array   # Records the processed texts into a file
 
 def pickleLoader(pklFile):
     try:
@@ -16,11 +16,11 @@ def pickleLoader(pklFile):
 
 if __name__ == '__main__':
     # Clears the file
-    with open("files/processed_tweets.txt", 'w') as f:
-        f.write("")
+    # with open("files/processed_tweets.txt", 'w') as f:
+    #     f.write("")
 
-    with open("files/processed_tweets.pkl", 'w') as f:
-        f.write("")
+    # with open("files/processed_tweets.pkl", 'w') as f:
+    #     f.write("")
 
     emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -29,8 +29,10 @@ if __name__ == '__main__':
         u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
         u"\U00002702-\U000027B0"
         u"\U000024C2-\U0001F251"
+        u"\xf0\x9f\x98\x86"
+        u"\xe2\x80\xa6"
+        u"\u2026"
         "]+", flags=re.UNICODE)
-
 
     # Getting the set of stop words
     stop = set(stopwords.words('portuguese'))
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     # Instance an object lemmatizer
     lemma = WordNetLemmatizer()
 
-    with open("files/unprocessed_tweets.pkl", 'rb') as f:
+    with open("files/positive_texts.pkl", 'rb') as f:
         for text in pickleLoader(f):
             print("ORIGINAL:", text)
 
@@ -51,6 +53,12 @@ if __name__ == '__main__':
             # To remove URLs, mentions and hashtags from the text
             text = re.sub(r'http\S+|@\S+|#\S+', '', text)
 
+            # To remove laughs from the string
+            text = re.sub(r'\b(a*ha+h[ha]*|o?l+o+l+[ol]*)\b', '', text)
+
+            # To remove words (laughs) that have a sigle letter (e.g. kkkkk)
+            text = ' '.join(w for w in text.split() if len(''.join(c for c in w if c != w[0]))>1)
+
             # To remove the emojis from the text
             text = emoji_pattern.sub(r'', text)
 
@@ -58,7 +66,7 @@ if __name__ == '__main__':
             text = ' '.join([w for w in text.split() if w not in stop])
 
             # To remove the ponctuation from the text
-            text = ''.join(ch for ch in text if ch not in pont)
+            text = ''.join(c for c in text if c not in pont)
 
             # Lemmatizes the text
             text = ' '.join(lemma.lemmatize(w) for w in text.split())
@@ -66,6 +74,12 @@ if __name__ == '__main__':
             # To remove the accents from the text
             text = ''.join(c for c in unicodedata.normalize('NFD', text)
                   if unicodedata.category(c) != 'Mn')
+
+            # To remove number from the text
+            text = ''.join([c for c in text if not c.isdigit()])
+
+            # To remove words with  only one character
+            text = ' '.join( [w for w in text.split() if len(w)>1] )
 
             # To remove duplicate letters - STAND BY
             # text = re.sub(r'(\w)\1+', r'\1', text)
@@ -75,4 +89,6 @@ if __name__ == '__main__':
 
             print("PROCESSED:", text, "\n")
 
-            record("processed_tweets", text);
+            if(len(text.split())>1):
+                arr = ["positive", text]
+                record_array("processed_tweets_positives", arr);

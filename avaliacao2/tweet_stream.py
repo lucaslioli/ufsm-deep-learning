@@ -64,6 +64,15 @@ def record(file_name, msg, id = ""):
     with open("files/"+file_name+".pkl", 'ab') as f:
         pkl.dump(msg, f, pkl.HIGHEST_PROTOCOL)
 
+# Records the tweet ID and message into a file
+def record_array(file_name, arr):
+    # Using a txt file for testing purposes
+    with open("files/"+file_name+".txt", 'a') as f:
+        f.write(arr[0] + ", " + arr[1] + '\n')
+
+    with open("files/"+file_name+".pkl", 'ab') as f:
+        pkl.dump(arr, f, pkl.HIGHEST_PROTOCOL)
+
 if __name__ == '__main__':
     # Variables that contains the user credentials to access Twitter API
     key = api_tokens()
