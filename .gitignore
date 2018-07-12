@@ -111,3 +111,5 @@ authenticate.py
 *.pkl
 # Record file for tests purposes
 *.txt
+
+*.hdf5

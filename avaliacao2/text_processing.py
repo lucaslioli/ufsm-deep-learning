@@ -32,6 +32,7 @@ if __name__ == '__main__':
         u"\xf0\x9f\x98\x86"
         u"\xe2\x80\xa6"
         u"\u2026"
+        u"\u200d"
         "]+", flags=re.UNICODE)
 
     # Getting the set of stop words
@@ -78,7 +79,7 @@ if __name__ == '__main__':
             # To remove number from the text
             text = ''.join([c for c in text if not c.isdigit()])
 
-            # To remove words with  only one character
+            # To remove words with only one character
             text = ' '.join( [w for w in text.split() if len(w)>1] )
 
             # To remove duplicate letters - STAND BY
